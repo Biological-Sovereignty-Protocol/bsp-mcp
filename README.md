@@ -1,7 +1,7 @@
 # bsp-mcp — Official BSP MCP Server
 
 > Connects AI agents to the Biological Sovereignty Protocol via the Model Context Protocol
-> Published by the Ambrósio Institute · [ambrosio.health](https://ambrosio.health) · [bsp.dev](https://bsp.dev)
+> Published by the Ambrósio Institute · [ambrosioinstitute.org](https://ambrosioinstitute.org) · [biologicalsovereigntyprotocol.com](https://biologicalsovereigntyprotocol.com)
 
 ---
 
@@ -96,7 +96,7 @@ This follows the exact same model as the Anthropic MCP protocol itself: anyone c
 
 → [bsp-spec](https://github.com/Biological-Sovereignty-Protocol/bsp-spec) · Full BSP specification
 → [bsp-sdk-typescript](https://github.com/Biological-Sovereignty-Protocol/bsp-sdk-typescript) · TypeScript SDK
-→ [bsp.dev](https://bsp.dev) · Documentation
+→ [biologicalsovereigntyprotocol.com](https://biologicalsovereigntyprotocol.com) · Documentation
 
 ---
 

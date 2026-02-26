@@ -118,7 +118,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return {
         content: [{
           type: 'text',
-          text: 'BSP MCP Server: bsp-sdk connection required. See https://bsp.dev/docs/mcp',
+          text: 'BSP MCP Server: bsp-sdk connection required. See https://biologicalsovereigntyprotocol.com/docs/mcp',
         }],
       }
 
@@ -126,7 +126,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return {
         content: [{
           type: 'text',
-          text: 'BSP MCP Server: bsp-sdk connection required. See https://bsp.dev/docs/mcp',
+          text: 'BSP MCP Server: bsp-sdk connection required. See https://biologicalsovereigntyprotocol.com/docs/mcp',
         }],
       }
 
@@ -152,7 +152,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return {
         content: [{
           type: 'text',
-          text: 'BSP MCP Server: bsp-sdk connection required. See https://bsp.dev/docs/mcp',
+          text: 'BSP MCP Server: bsp-sdk connection required. See https://biologicalsovereigntyprotocol.com/docs/mcp',
         }],
       }
 
@@ -164,7 +164,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport()
   await server.connect(transport)
-  console.error('BSP MCP Server running — ambrosio.health | bsp.dev')
+  console.error('BSP MCP Server running — ambrosioinstitute.org | biologicalsovereigntyprotocol.com')
 }
 
 main().catch(console.error)

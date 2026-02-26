@@ -18,7 +18,7 @@
     "type": "git",
     "url": "https://github.com/Biological-Sovereignty-Protocol/bsp-mcp"
   },
-  "homepage": "https://bsp.dev",
+  "homepage": "https://biologicalsovereigntyprotocol.com",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@bsp/sdk": "^0.2.0"
