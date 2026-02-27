@@ -1,31 +1,53 @@
 {
   "name": "@bsp/mcp",
-  "version": "0.2.0",
-  "description": "Official BSP MCP Server — connects AI agents to the Biological Sovereignty Protocol",
+  "version": "1.0.0",
+  "description": "Official BSP MCP Server — connects AI agents to the Biological Sovereignty Protocol with active consent enforcement",
   "main": "dist/index.js",
   "bin": {
     "bsp-mcp": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["bsp", "mcp", "biological-sovereignty", "longevity", "health-data", "claude", "model-context-protocol"],
+  "keywords": [
+    "bsp",
+    "mcp",
+    "biological-sovereignty",
+    "longevity",
+    "health-data",
+    "claude",
+    "model-context-protocol",
+    "arweave",
+    "biomarker",
+    "anthropic-mcp"
+  ],
   "author": "Ambrósio Institute",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Biological-Sovereignty-Protocol/bsp-mcp"
   },
-  "homepage": "https://biologicalsovereigntyprotocol.com",
+  "homepage": "https://biologicalsovereigntyprotocol.com/developers/sdk-reference",
+  "bugs": {
+    "url": "https://github.com/Biological-Sovereignty-Protocol/bsp-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "@bsp/sdk": "^0.2.0"
+    "@bsp/sdk": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
+    "typescript": "^5.4.0",
     "@types/node": "^20.0.0",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.9.0"
   }
 }
