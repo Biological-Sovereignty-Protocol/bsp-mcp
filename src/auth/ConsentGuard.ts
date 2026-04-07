@@ -8,7 +8,7 @@
  * and enforces scope before passing the call to the tool.
  */
 
-import { ConsentStatus, MCPResult } from './types'
+import { ConsentStatus, MCPResult } from '../types'
 
 export type ConsentRequired = boolean
 
