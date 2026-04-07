@@ -124,6 +124,58 @@ const tools: Tool[] = [
     },
   },
   {
+    name: 'bsp_lock_beo',
+    description:
+      'Emergency lock — freezes the BEO immediately. No reads or writes permitted while locked. ' +
+      'Only the BEO holder can lock or unlock. Requires the private key configured in BSP_PRIVATE_KEY.',
+    inputSchema: {
+      type: 'object',
+      required: ['beoId'],
+      properties: {
+        beoId: { type: 'string', description: 'The BEO UUID to lock.' },
+      },
+    },
+  },
+  {
+    name: 'bsp_unlock_beo',
+    description: 'Unlock a previously locked BEO. Requires the BEO holder\'s private key.',
+    inputSchema: {
+      type: 'object',
+      required: ['beoId'],
+      properties: {
+        beoId: { type: 'string', description: 'The BEO UUID to unlock.' },
+      },
+    },
+  },
+  {
+    name: 'bsp_destroy_beo',
+    description:
+      'IRREVERSIBLE — Permanently destroy a BEO (LGPD Art. 18 / GDPR Art. 17). ' +
+      'Nullifies public key, revokes all ConsentTokens, releases domain. ' +
+      'The user MUST confirm before executing this tool.',
+    inputSchema: {
+      type: 'object',
+      required: ['beoId', 'confirm'],
+      properties: {
+        beoId: { type: 'string', description: 'The BEO UUID to destroy.' },
+        confirm: { type: 'boolean', description: 'Must be true to execute.' },
+      },
+    },
+  },
+  {
+    name: 'bsp_revoke_all_tokens',
+    description:
+      'Emergency revocation — revokes ALL active ConsentTokens for a BEO. ' +
+      'No institution will be able to access any data after this.',
+    inputSchema: {
+      type: 'object',
+      required: ['beoId'],
+      properties: {
+        beoId: { type: 'string', description: 'The BEO UUID whose tokens to revoke.' },
+      },
+    },
+  },
+  {
     name: 'bsp_check_consent',
     description:
       'Check the current consent configuration — which BEO is connected, which data categories ' +
@@ -172,6 +224,63 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     // ── requires consent ──────────────────────────────────────────────────────
+
+    // ── write operations (require BSP_PRIVATE_KEY) ─────────────────────────
+
+    case 'bsp_lock_beo':
+    case 'bsp_unlock_beo':
+    case 'bsp_destroy_beo':
+    case 'bsp_revoke_all_tokens': {
+      const privateKey = process.env.BSP_PRIVATE_KEY
+      if (!privateKey) {
+        return {
+          content: [{ type: 'text', text: '⛔ BSP_PRIVATE_KEY is required for write operations. Set it in the MCP server environment.' }],
+          isError: true,
+        }
+      }
+
+      const registryUrl = process.env.BSP_REGISTRY_URL || 'https://api.biologicalsovereigntyprotocol.com'
+      const beoId = (args as any)?.beoId
+
+      if (!beoId) {
+        return { content: [{ type: 'text', text: '❌ Missing required parameter: beoId' }], isError: true }
+      }
+
+      if (name === 'bsp_destroy_beo' && !(args as any)?.confirm) {
+        return { content: [{ type: 'text', text: '⛔ Destruction requires confirm: true. This action is IRREVERSIBLE.' }], isError: true }
+      }
+
+      const fnMap: Record<string, { endpoint: string; fn: string; contract: string }> = {
+        bsp_lock_beo:          { endpoint: '/api/relayer/beo/lock', fn: 'lockBEO', contract: 'BEORegistry' },
+        bsp_unlock_beo:        { endpoint: '/api/relayer/beo/unlock', fn: 'unlockBEO', contract: 'BEORegistry' },
+        bsp_destroy_beo:       { endpoint: '/api/relayer/beo/destroy', fn: 'destroyBEO', contract: 'BEORegistry' },
+        bsp_revoke_all_tokens: { endpoint: '/api/relayer/beo/revoke-all', fn: 'revokeAllTokens', contract: 'AccessControl' },
+      }
+      const op = fnMap[name]
+
+      // Dynamically import SDK for signing
+      const { CryptoUtils } = await import('@bsp/sdk')
+      const nonce = CryptoUtils.generateNonce()
+      const timestamp = new Date().toISOString()
+      const payload = { function: op.fn, beoId, nonce, timestamp }
+      const signature = CryptoUtils.signPayload(payload, privateKey)
+
+      try {
+        const res = await fetch(`${registryUrl}${op.endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ beoId, signature, nonce, timestamp }),
+        })
+        const data = await res.json() as Record<string, any>
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ ${op.fn} failed: ${data?.error || res.statusText}` }], isError: true }
+        }
+        const action = name.replace('bsp_', '').replace(/_/g, ' ')
+        return { content: [{ type: 'text', text: `✅ **${action}** completed.\n\nTransaction: \`${data?.transactionId}\`\nBEO: \`${beoId}\`` }] }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      }
+    }
 
     case 'bsp_check_consent': {
       const beo = guard.getBEODomain()
