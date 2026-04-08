@@ -35,6 +35,10 @@ This is what sovereign health data looks like in practice.
 | `bsp_resolve_biomarker` | No — public taxonomy | Name, category, level, and clinical context for a BSP biomarker code. |
 | `bsp_list_categories` | No — public taxonomy | All 25 BSP taxonomy categories with level filters (CORE / STANDARD / EXTENDED / DEVICE). |
 | `bsp_check_consent` | No — reads session config | Active consent status: which BEO is connected, which intents are authorized, token ID, and expiry. Run this first. |
+| `bsp_lock_beo` | Yes — `BSP_PRIVATE_KEY` | Emergency lock — freezes the BEO immediately. No operations permitted while locked. |
+| `bsp_unlock_beo` | Yes — `BSP_PRIVATE_KEY` | Unlock a previously locked BEO. |
+| `bsp_destroy_beo` | Yes — `BSP_PRIVATE_KEY` + `confirm: true` | **IRREVERSIBLE** — Permanent erasure (LGPD/GDPR). Nullifies key, revokes all tokens, releases domain. |
+| `bsp_revoke_all_tokens` | Yes — `BSP_PRIVATE_KEY` | Emergency revoke ALL active ConsentTokens for a BEO. |
 
 ---
 
@@ -222,7 +226,7 @@ type MCPResult = {
 ## Changelog
 
 **v1.0.0** — Initial release
-- Five tools: `bsp_get_biorecords`, `bsp_get_beo_summary`, `bsp_resolve_biomarker`, `bsp_list_categories`, `bsp_check_consent`
+- 9 tools: 5 read (`bsp_get_biorecords`, `bsp_get_beo_summary`, `bsp_resolve_biomarker`, `bsp_list_categories`, `bsp_check_consent`) + 4 write (`bsp_lock_beo`, `bsp_unlock_beo`, `bsp_destroy_beo`, `bsp_revoke_all_tokens`)
 - ConsentGuard with intent and BEO domain validation
 - Full BSP taxonomy: 25 categories, CORE/STANDARD/EXTENDED/DEVICE levels
 - stdio transport via `@modelcontextprotocol/sdk`
