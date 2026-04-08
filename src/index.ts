@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * BSP MCP Server — Official Model Context Protocol server for the Biological Sovereignty Protocol
  * Version 1.0.0 | Ambrósio Institute
