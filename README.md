@@ -1,4 +1,4 @@
-![BSP MCP](https://img.shields.io/badge/MCP-compatible-6e40c9?style=flat-square) ![Version](https://img.shields.io/npm/v/@bsp/mcp?style=flat-square&label=version) ![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square) ![Node](https://img.shields.io/badge/node-%3E%3D18-green?style=flat-square)
+![BSP MCP](https://img.shields.io/badge/MCP-compatible-6e40c9?style=flat-square) ![Version](https://img.shields.io/npm/v/bsp-mcp?style=flat-square&label=version) ![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square) ![Node](https://img.shields.io/badge/node-%3E%3D18-green?style=flat-square)
 
 # bsp-mcp
 
@@ -187,7 +187,7 @@ case 'bsp_my_new_tool': {
   if (consentError) return consentError
 
   // Your tool logic here
-  // Use @bsp/sdk ExchangeClient to interact with the registry
+  // Use bsp-sdk ExchangeClient to interact with the registry
 }
 ```
 
