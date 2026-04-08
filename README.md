@@ -12,7 +12,7 @@
 
 `bsp-mcp` is the official Model Context Protocol server for the Biological Sovereignty Protocol. It lets any MCP-compatible AI assistant — Claude, GPT, or any other — read and interact with a user's BSP health records. But it never does so silently: every single data access is gated by a ConsentToken that the user explicitly issued, with cryptographic verification enforced on-chain.
 
-The server implements the MCP tool interface over stdio, integrates with the `@bsp/sdk` ExchangeClient, and treats consent as a hard runtime constraint — not a UI checkbox. If a valid token is not present, or if the requested intent falls outside what was authorized, the call is rejected before any data is touched.
+The server implements the MCP tool interface over stdio, integrates with the `bsp-sdk` ExchangeClient, and treats consent as a hard runtime constraint — not a UI checkbox. If a valid token is not present, or if the requested intent falls outside what was authorized, the call is rejected before any data is touched.
 
 ---
 
@@ -43,7 +43,7 @@ This is what sovereign health data looks like in practice.
 **1. Install**
 
 ```bash
-npx @bsp/mcp
+npx bsp-mcp
 ```
 
 **2. Configure in Claude Desktop**
@@ -55,7 +55,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "bsp": {
       "command": "npx",
-      "args": ["-y", "@bsp/mcp"],
+      "args": ["-y", "bsp-mcp"],
       "env": {
         "BSP_BEO_DOMAIN": "yourname.bsp",
         "BSP_CONSENT_TOKEN_ID": "tok_...",
@@ -141,7 +141,7 @@ The `ConsentGuard` runs before every data-access tool call. It checks that:
 3. The token's `intents` array includes the required intent for the requested operation
 4. The token has not expired
 
-When `@bsp/sdk` is connected to the registry, step 3 and 4 are verified on-chain against the AccessControl contract. The token state on Arweave is the source of truth — not the local environment.
+When `bsp-sdk` is connected to the registry, step 3 and 4 are verified on-chain against the AccessControl contract. The token state on Arweave is the source of truth — not the local environment.
 
 **What happens when a token expires**
 
@@ -214,7 +214,7 @@ type MCPResult = {
 **Related packages**
 
 - [bsp-spec](https://github.com/Biological-Sovereignty-Protocol/bsp-spec) — full BSP specification
-- [bsp-sdk-typescript](https://github.com/Biological-Sovereignty-Protocol/bsp-sdk-typescript) — TypeScript SDK (`@bsp/sdk`)
+- [bsp-sdk-typescript](https://github.com/Biological-Sovereignty-Protocol/bsp-sdk-typescript) — TypeScript SDK (`bsp-sdk`)
 - [bsp-id-web](https://github.com/ambrosio-institute/bsp-id-web) — web app to manage your BEO and issue tokens
 
 ---
