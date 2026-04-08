@@ -259,7 +259,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const op = fnMap[name]
 
       // Dynamically import SDK for signing
-      const { CryptoUtils } = await import('@bsp/sdk')
+      const { CryptoUtils } = await import('@biological-sovereignty-protocol/sdk')
       const nonce = CryptoUtils.generateNonce()
       const timestamp = new Date().toISOString()
       const payload = { function: op.fn, beoId, nonce, timestamp }
@@ -322,7 +322,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             `| Token | \`${token}\` |\n` +
             `| Network | \`${process.env.BSP_NETWORK || 'mainnet'}\` |\n\n` +
             `> Full consent verification (intents, categories, expiry) requires registry connection.\n` +
-            `> Connect \`@bsp/sdk\` to the registry for live validation.`
+            `> Connect \`@biological-sovereignty-protocol/sdk\` to the registry for live validation.`
         }],
       }
     }
@@ -331,7 +331,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const consentError = guard.check('READ_RECORDS')
       if (consentError) return consentError
 
-      // Implementation: uses @bsp/sdk ExchangeClient.readRecords
+      // Implementation: uses @biological-sovereignty-protocol/sdk ExchangeClient.readRecords
       // with the configured ConsentToken
       return {
         content: [{
@@ -341,7 +341,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             `Status: Registry connection required to retrieve records.\n\n` +
             `This tool is fully implemented — it requires:\n` +
             `1. \`bsp-registry\` deployed on Arweave\n` +
-            `2. \`@bsp/sdk\` ExchangeClient pointing to registry\n\n` +
+            `2. \`@biological-sovereignty-protocol/sdk\` ExchangeClient pointing to registry\n\n` +
             `→ https://biologicalsovereigntyprotocol.com/getting-started/quickstart`
         }],
       }
@@ -351,7 +351,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const consentError = guard.check('READ_RECORDS')
       if (consentError) return consentError
 
-      // Implementation: uses @bsp/sdk ExchangeClient to aggregate BEO data
+      // Implementation: uses @biological-sovereignty-protocol/sdk ExchangeClient to aggregate BEO data
       return {
         content: [{
           type: 'text', text:

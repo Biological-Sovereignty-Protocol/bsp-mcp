@@ -1,5 +1,5 @@
 {
-  "name": "@bsp/mcp",
+  "name": "@biological-sovereignty-protocol/mcp",
   "version": "1.0.0",
   "description": "Official BSP MCP Server — connects AI agents to the Biological Sovereignty Protocol with active consent enforcement",
   "main": "dist/index.js",
@@ -42,7 +42,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@bsp/sdk": "^1.0.0",
+    "@biological-sovereignty-protocol/sdk": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {

@@ -39,7 +39,7 @@ export class ConsentGuard {
                 `The user must grant a ConsentToken with intent "${intent}" before this tool can be used.`
             )
         }
-        // Full on-chain verification happens when @bsp/sdk is connected.
+        // Full on-chain verification happens when @biological-sovereignty-protocol/sdk is connected.
         // For now, this guard checks that token is configured.
         return null
     }
