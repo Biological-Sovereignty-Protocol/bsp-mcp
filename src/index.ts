@@ -251,11 +251,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: 'text', text: '⛔ Destruction requires confirm: true. This action is IRREVERSIBLE.' }], isError: true }
       }
 
-      const fnMap: Record<string, { endpoint: string; fn: string; contract: string }> = {
-        bsp_lock_beo:          { endpoint: '/api/relayer/beo/lock', fn: 'lockBEO', contract: 'BEORegistry' },
-        bsp_unlock_beo:        { endpoint: '/api/relayer/beo/unlock', fn: 'unlockBEO', contract: 'BEORegistry' },
-        bsp_destroy_beo:       { endpoint: '/api/relayer/beo/destroy', fn: 'destroyBEO', contract: 'BEORegistry' },
-        bsp_revoke_all_tokens: { endpoint: '/api/relayer/beo/revoke-all', fn: 'revokeAllTokens', contract: 'AccessControl' },
+      const fnMap: Record<string, { endpoint: string; fn: string; process: string }> = {
+        bsp_lock_beo:          { endpoint: '/api/relayer/beo/lock', fn: 'lockBEO', process: 'BEORegistry' },
+        bsp_unlock_beo:        { endpoint: '/api/relayer/beo/unlock', fn: 'unlockBEO', process: 'BEORegistry' },
+        bsp_destroy_beo:       { endpoint: '/api/relayer/beo/destroy', fn: 'destroyBEO', process: 'BEORegistry' },
+        bsp_revoke_all_tokens: { endpoint: '/api/relayer/beo/revoke-all', fn: 'revokeAllTokens', process: 'AccessControl' },
       }
       const op = fnMap[name]
 
