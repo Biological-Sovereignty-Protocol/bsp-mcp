@@ -53,7 +53,7 @@ BSP is built on these security guarantees:
 - Key algorithm: Ed25519 (tweetnacl)
 - Key derivation: BIP39 + PBKDF2
 - Key export encryption: AES-256-GCM, PBKDF2-SHA256 (600,000 iterations)
-- On-chain storage: Aptos via AO
+- On-chain registry: Aptos (Move modules); encrypted payload storage: Arweave
 
 ## Bug Bounty
 
