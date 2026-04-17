@@ -138,13 +138,13 @@ No duplicate conflict — the last hematology record is from this morning, and t
 
 Response:
   Status:     ACCEPTED
-  TX:         ar://7f3a9d2e...
+  TX:         apt://7f3a9d2e...
   BEO:        alice.bsp
   Records:    3 submitted
-  Arweave TX: confirmed in block 1,482,991
+  Aptos TX: confirmed in block 1,482,991
 ```
 
-Records submitted and confirmed on Arweave. Transaction ID `ar://7f3a9d2e...` is now the permanent audit entry for this submission. Alice can verify it independently at any time.
+Records submitted and confirmed on Aptos. Transaction ID `apt://7f3a9d2e...` is now the permanent audit entry for this submission. Alice can verify it independently at any time.
 
 ---
 
@@ -180,7 +180,7 @@ Your consent token has been revoked. I can see the revocation was issued just no
 
 If you want to continue, you'll need to issue a new ConsentToken from your BSP identity and update the `BSP_CONSENT_TOKEN_ID` in your Claude Desktop config. This is the consent model working as designed — you're fully in control.
 
-Nothing from this session was cached or retained. The access history up to the point of revocation is permanently recorded on Arweave, which you can audit at any time.
+Nothing from this session was cached or retained. The access history up to the point of revocation is permanently recorded on Aptos, which you can audit at any time.
 
 ---
 
@@ -189,12 +189,12 @@ Nothing from this session was cached or retained. The access history up to the p
 **Claude:** Here's exactly what happened:
 
 1. You called `bsp_check_consent` to check the current token state
-2. The ConsentGuard queried the AccessControl contract on Arweave for token `tok_7f3a9d...c291`
+2. The ConsentGuard queried the AccessControl contract on Aptos for token `tok_7f3a9d...c291`
 3. The contract returned `REVOKED` with the timestamp you triggered from the BSP app
 4. The guard returned a `TOKEN_REVOKED` error before any data query ran
 5. No fallback, no retry — the call halted completely
 
-The reason this works immediately is that the token's canonical state lives on Arweave, not in this session or in any server cache. The moment you revoke it, every system that checks the registry sees it as revoked. There's no window where stale consent could be exploited.
+The reason this works immediately is that the token's canonical state lives on Aptos, not in this session or in any server cache. The moment you revoke it, every system that checks the registry sees it as revoked. There's no window where stale consent could be exploited.
 
 To reauthorize, issue a new token:
 

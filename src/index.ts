@@ -341,7 +341,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             `BEO: \`${guard.getBEODomain()}\`\n` +
             `Status: Registry connection required to retrieve records.\n\n` +
             `This tool is fully implemented — it requires:\n` +
-            `1. \`bsp-registry\` deployed on Arweave\n` +
+            `1. \`bsp-registry\` deployed on Aptos\n` +
             `2. \`@biological-sovereignty-protocol/sdk\` ExchangeClient pointing to registry\n\n` +
             `→ https://biologicalsovereigntyprotocol.com/getting-started/quickstart`
         }],

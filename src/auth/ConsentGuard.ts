@@ -2,7 +2,7 @@
  * ConsentGuard — Verifies consent before every tool call that accesses BEO data.
  *
  * All BSP data operations require explicit consent from the BEO holder,
- * enforced on-chain by the AccessControl smart contract.
+ * enforced on-chain by the AccessControl Move module on Aptos.
  *
  * The ConsentGuard reads token status from environment or session context
  * and enforces scope before passing the call to the tool.

@@ -20,7 +20,7 @@ The server implements the MCP tool interface over stdio, integrates with the `bs
 
 In 2026, AI health assistants are everywhere. The problem is that most of them access health data through institutional pipelines where the user is a bystander — data flows from EHR to platform to model, and the individual never sees the consent trail, let alone controls it.
 
-BSP-MCP inverts that. Every query your AI makes is gated by a ConsentToken you issued, scoped to exactly the categories and intents you authorized, with an expiry you set. The AI sees what you allowed — nothing more. When you revoke access, it stops immediately. The entire access history is permanently recorded on Arweave, auditable by anyone.
+BSP-MCP inverts that. Every query your AI makes is gated by a ConsentToken you issued, scoped to exactly the categories and intents you authorized, with an expiry you set. The AI sees what you allowed — nothing more. When you revoke access, it stops immediately. The entire access history is permanently recorded on Aptos, auditable by anyone.
 
 This is what sovereign health data looks like in practice.
 
@@ -145,7 +145,7 @@ The `ConsentGuard` runs before every data-access tool call. It checks that:
 3. The token's `intents` array includes the required intent for the requested operation
 4. The token has not expired
 
-When `bsp-sdk` is connected to the registry, step 3 and 4 are verified on-chain against the AccessControl contract. The token state on Arweave is the source of truth — not the local environment.
+When `bsp-sdk` is connected to the registry, step 3 and 4 are verified on-chain against the AccessControl contract. The token state on Aptos is the source of truth — not the local environment.
 
 **What happens when a token expires**
 
@@ -162,7 +162,7 @@ The AI cannot proceed. No data is returned. No fallback path exists.
 
 **What happens when a token is revoked**
 
-Revocation is immediate. The AccessControl contract on Arweave marks the token as revoked, and the next tool call that hits the registry will receive a `TOKEN_REVOKED` error and halt. Mid-conversation revocation is handled gracefully — the AI acknowledges the revocation and stops accessing data.
+Revocation is immediate. The AccessControl contract on Aptos marks the token as revoked, and the next tool call that hits the registry will receive a `TOKEN_REVOKED` error and halt. Mid-conversation revocation is handled gracefully — the AI acknowledges the revocation and stops accessing data.
 
 **Scope enforcement**
 
