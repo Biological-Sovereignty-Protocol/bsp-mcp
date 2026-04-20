@@ -464,9 +464,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           isError: true,
         }
       }
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10_000)
       try {
         const res = await fetch(`${apiUrl}/api/beo?limit=${Math.min(limit, 100)}&offset=${offset}`, {
           headers: { 'x-api-key': ieoKey },
+          signal: controller.signal,
         })
         const data = await res.json() as Record<string, any>
         if (!res.ok) {
@@ -475,6 +478,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
       } catch (e: any) {
         return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      } finally {
+        clearTimeout(timeout)
       }
     }
 
@@ -488,17 +493,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           isError: true,
         }
       }
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10_000)
       try {
         const params = new URLSearchParams({ limit: String(Math.min(limit, 100)), offset: String(offset) })
         if (type) params.set('type', type)
         const res = await fetch(`${apiUrl}/api/ieo?${params.toString()}`, {
           headers: { 'x-api-key': ieoKey },
+          signal: controller.signal,
         })
         const data = await res.json() as Record<string, any>
         if (!res.ok) {
           return { content: [{ type: 'text', text: `❌ bsp_list_ieos failed: ${data?.error || res.statusText}` }], isError: true }
         }
         return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      } finally {
+        clearTimeout(timeout)
+      }
+    }
+
+    case 'bsp_verify_consent': {
+      const { token_id, intent } = (args as { token_id: string; intent: string })
+
+      if (!token_id || !intent) {
+        return { content: [{ type: 'text', text: '❌ Missing required parameters: token_id, intent' }], isError: true }
+      }
+
+      const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
+
+      try {
+        const res = await fetch(`${apiUrl}/api/consent/${token_id}/verify?intent=${encodeURIComponent(intent)}`)
+        const data = await res.json() as { valid: boolean; reason?: string }
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ Consent verification failed: ${(data as any)?.error || res.statusText}` }], isError: true }
+        }
+        const status = data.valid ? '✅ Valid' : '❌ Invalid'
+        const reason = data.reason ? `\nReason: ${data.reason}` : ''
+        return {
+          content: [{
+            type: 'text',
+            text: `${status}\n\nToken: \`${token_id}\`\nIntent: \`${intent}\`${reason}`,
+          }],
+        }
       } catch (e: any) {
         return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
       }
@@ -541,6 +579,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       if (!beo_id || !token_id || !biomarker || value === undefined || !unit || !collection_time) {
         return { content: [{ type: 'text', text: '❌ Missing required parameters. Required: beo_id, token_id, biomarker, value, unit, collection_time' }], isError: true }
+      }
+
+      if (isNaN(Date.parse(collection_time))) {
+        return { content: [{ type: 'text', text: 'collection_time must be a valid ISO8601 datetime' }], isError: true }
       }
 
       const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
