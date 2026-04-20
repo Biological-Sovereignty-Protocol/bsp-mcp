@@ -9,7 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [2.1.0] — 2026-04
+
+### Changed
+
+- Sync version with `@biological-sovereignty-protocol/sdk` v2.1.0 so the
+  entire BSP client stack shares a single major.minor line.
+- `.env.example` now documents every env var read by the server
+  (`BSP_BEO_DOMAIN`, `BSP_CONSENT_TOKEN_ID`, `BSP_PRIVATE_KEY`,
+  `BSP_REGISTRY_URL`, `BSP_NETWORK`) and removes the stale
+  `BSP_APTOS_NETWORK` that was never consumed by code.
+
 ### Added
+
 - `examples/` — per-tool examples with JSON payloads, input schemas, and expected responses (including error cases)
 - `CONTRIBUTING.md` with dev setup, tool-authoring guide, and PR checklist
 - Expanded README with detailed JSON input schema for each of the 9 tools
