@@ -226,6 +226,24 @@ const tools: Tool[] = [
     },
   },
   {
+    name: 'bsp_verify_consent',
+    description: 'Verify if a ConsentToken is valid and has the required intent',
+    inputSchema: {
+      type: 'object',
+      required: ['token_id', 'intent'],
+      properties: {
+        token_id: {
+          type: 'string',
+          description: 'ConsentToken ID to verify.',
+        },
+        intent: {
+          type: 'string',
+          description: 'Intent to check (e.g. "READ_RECORDS", "SUBMIT_RECORD").',
+        },
+      },
+    },
+  },
+  {
     name: 'bsp_submit_biorecord',
     description: 'Submit a BioRecord for a BEO (requires SUBMIT_RECORD consent)',
     inputSchema: {
@@ -481,6 +499,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           return { content: [{ type: 'text', text: `❌ bsp_list_ieos failed: ${data?.error || res.statusText}` }], isError: true }
         }
         return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      }
+    }
+
+    case 'bsp_verify_consent': {
+      const { token_id, intent } = (args as { token_id: string; intent: string })
+
+      if (!token_id || !intent) {
+        return { content: [{ type: 'text', text: '❌ Missing required parameters: token_id, intent' }], isError: true }
+      }
+
+      const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
+
+      try {
+        const res = await fetch(`${apiUrl}/api/consent/${token_id}/verify?intent=${encodeURIComponent(intent)}`)
+        const data = await res.json() as { valid: boolean; reason?: string }
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ Consent verification failed: ${(data as any)?.error || res.statusText}` }], isError: true }
+        }
+        const status = data.valid ? '✅ Valid' : '❌ Invalid'
+        const reason = data.reason ? `\nReason: ${data.reason}` : ''
+        return {
+          content: [{
+            type: 'text',
+            text: `${status}\n\nToken: \`${token_id}\`\nIntent: \`${intent}\`${reason}`,
+          }],
+        }
       } catch (e: any) {
         return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
       }
