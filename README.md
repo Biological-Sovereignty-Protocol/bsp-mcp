@@ -223,13 +223,122 @@ type MCPResult = {
 
 ---
 
+## Tool Schemas
+
+Exhaustive JSON Schema for every tool. For end-to-end request / response examples with success and error paths, see [`examples/`](./examples/).
+
+### `bsp_check_consent`
+
+```json
+{ "type": "object", "properties": {}, "required": [] }
+```
+
+### `bsp_get_biorecords`
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "category":  { "type": "string",  "description": "BSP category code (e.g. BSP-HM)" },
+    "codes":     { "type": "array",   "items": { "type": "string" }, "description": "Specific biomarker codes" },
+    "fromDate":  { "type": "string",  "format": "date-time" },
+    "toDate":    { "type": "string",  "format": "date-time" },
+    "limit":     { "type": "integer", "minimum": 1, "maximum": 500, "default": 50 }
+  },
+  "required": []
+}
+```
+
+### `bsp_get_beo_summary`
+
+```json
+{ "type": "object", "properties": {}, "required": [] }
+```
+
+### `bsp_resolve_biomarker`
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "code": { "type": "string", "description": "Biomarker code (e.g. BSP-HM-HGB)" }
+  },
+  "required": ["code"]
+}
+```
+
+### `bsp_list_categories`
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": ["CORE", "STANDARD", "EXTENDED", "DEVICE"]
+    }
+  },
+  "required": []
+}
+```
+
+### `bsp_lock_beo` / `bsp_unlock_beo`
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "confirm": { "type": "boolean", "description": "Must be true" }
+  },
+  "required": ["confirm"]
+}
+```
+
+### `bsp_destroy_beo`
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "confirm": { "type": "boolean", "description": "Must be true — irreversible" },
+    "reason":  { "type": "string",  "description": "Optional audit reason" }
+  },
+  "required": ["confirm"]
+}
+```
+
+### `bsp_revoke_all_tokens`
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "confirm": { "type": "boolean" }
+  },
+  "required": ["confirm"]
+}
+```
+
+All tools return an `MCPResult`:
+
+```typescript
+type MCPResult = {
+  content: Array<{ type: 'text'; text: string }>
+  isError?: boolean
+}
+```
+
+Error payloads always include a stable code in brackets — e.g. `[TOKEN_EXPIRED]`, `[SCOPE_VIOLATION]`, `[CONFIRM_REQUIRED]`. Full catalog: [bsp-spec/docs/ERROR_CODES.md](https://github.com/Biological-Sovereignty-Protocol/bsp-spec/blob/main/docs/ERROR_CODES.md).
+
+---
+
 ## Changelog
 
-**v1.0.0** — Initial release
-- 9 tools: 5 read (`bsp_get_biorecords`, `bsp_get_beo_summary`, `bsp_resolve_biomarker`, `bsp_list_categories`, `bsp_check_consent`) + 4 write (`bsp_lock_beo`, `bsp_unlock_beo`, `bsp_destroy_beo`, `bsp_revoke_all_tokens`)
-- ConsentGuard with intent and BEO domain validation
-- Full BSP taxonomy: 25 categories, CORE/STANDARD/EXTENDED/DEVICE levels
-- stdio transport via `@modelcontextprotocol/sdk`
+See [`CHANGELOG.md`](./CHANGELOG.md).
+
+## Contributing
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ---
 
