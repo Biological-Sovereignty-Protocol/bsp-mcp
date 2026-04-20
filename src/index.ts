@@ -187,6 +187,78 @@ const tools: Tool[] = [
       properties: {},
     },
   },
+  {
+    name: 'bsp_list_beos',
+    description: 'List BEOs accessible to the configured IEO',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of BEOs to return (default: 20, max: 100).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Number of records to skip for pagination (default: 0).',
+        },
+      },
+    },
+  },
+  {
+    name: 'bsp_list_ieos',
+    description: 'List registered IEOs on the BSP network',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of IEOs to return (default: 20, max: 100).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Number of records to skip for pagination (default: 0).',
+        },
+        type: {
+          type: 'string',
+          description: 'Filter by IEO type (e.g. "clinic", "lab", "insurer").',
+        },
+      },
+    },
+  },
+  {
+    name: 'bsp_submit_biorecord',
+    description: 'Submit a BioRecord for a BEO (requires SUBMIT_RECORD consent)',
+    inputSchema: {
+      type: 'object',
+      required: ['beo_id', 'token_id', 'biomarker', 'value', 'unit', 'collection_time'],
+      properties: {
+        beo_id: {
+          type: 'string',
+          description: 'The BEO UUID that owns this record.',
+        },
+        token_id: {
+          type: 'string',
+          description: 'ConsentToken ID authorizing this submission.',
+        },
+        biomarker: {
+          type: 'string',
+          description: 'BSP biomarker code (e.g. "BSP-GL-001").',
+        },
+        value: {
+          type: 'number',
+          description: 'Numeric measurement value.',
+        },
+        unit: {
+          type: 'string',
+          description: 'Unit of measurement (e.g. "mg/dL", "mmol/L").',
+        },
+        collection_time: {
+          type: 'string',
+          description: 'ISO8601 timestamp of when the sample was collected (e.g. "2025-06-01T08:30:00Z").',
+        },
+      },
+    },
+  },
 ]
 
 // ─── Server Setup ─────────────────────────────────────────────────────────────
@@ -361,6 +433,102 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             `Status: Registry connection required for live summary.\n\n` +
             `→ https://biologicalsovereigntyprotocol.com/getting-started/quickstart`
         }],
+      }
+    }
+
+    case 'bsp_list_beos': {
+      const { limit = 20, offset = 0 } = (args as { limit?: number; offset?: number }) ?? {}
+      const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
+      const ieoKey = process.env.BSP_IEO_API_KEY
+      if (!ieoKey) {
+        return {
+          content: [{ type: 'text', text: '⛔ BSP_IEO_API_KEY is required for IEO operations. Set it in the MCP server environment.' }],
+          isError: true,
+        }
+      }
+      try {
+        const res = await fetch(`${apiUrl}/api/beo?limit=${Math.min(limit, 100)}&offset=${offset}`, {
+          headers: { 'x-api-key': ieoKey },
+        })
+        const data = await res.json() as Record<string, any>
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ bsp_list_beos failed: ${data?.error || res.statusText}` }], isError: true }
+        }
+        return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      }
+    }
+
+    case 'bsp_list_ieos': {
+      const { limit = 20, offset = 0, type } = (args as { limit?: number; offset?: number; type?: string }) ?? {}
+      const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
+      const ieoKey = process.env.BSP_IEO_API_KEY
+      if (!ieoKey) {
+        return {
+          content: [{ type: 'text', text: '⛔ BSP_IEO_API_KEY is required for IEO operations. Set it in the MCP server environment.' }],
+          isError: true,
+        }
+      }
+      try {
+        const params = new URLSearchParams({ limit: String(Math.min(limit, 100)), offset: String(offset) })
+        if (type) params.set('type', type)
+        const res = await fetch(`${apiUrl}/api/ieo?${params.toString()}`, {
+          headers: { 'x-api-key': ieoKey },
+        })
+        const data = await res.json() as Record<string, any>
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ bsp_list_ieos failed: ${data?.error || res.statusText}` }], isError: true }
+        }
+        return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      }
+    }
+
+    case 'bsp_submit_biorecord': {
+      const consentError = guard.check('SUBMIT_RECORD')
+      if (consentError) return consentError
+
+      const { beo_id, token_id, biomarker, value, unit, collection_time } =
+        (args as { beo_id: string; token_id: string; biomarker: string; value: number; unit: string; collection_time: string })
+
+      if (!beo_id || !token_id || !biomarker || value === undefined || !unit || !collection_time) {
+        return { content: [{ type: 'text', text: '❌ Missing required parameters. Required: beo_id, token_id, biomarker, value, unit, collection_time' }], isError: true }
+      }
+
+      const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
+      const ieoKey = process.env.BSP_IEO_API_KEY
+      if (!ieoKey) {
+        return {
+          content: [{ type: 'text', text: '⛔ BSP_IEO_API_KEY is required for submit operations. Set it in the MCP server environment.' }],
+          isError: true,
+        }
+      }
+
+      try {
+        const res = await fetch(`${apiUrl}/api/exchange/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': ieoKey },
+          body: JSON.stringify({ beo_id, token_id, biomarker, value, unit, collection_time }),
+        })
+        const data = await res.json() as Record<string, any>
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ bsp_submit_biorecord failed: ${data?.error || res.statusText}` }], isError: true }
+        }
+        return {
+          content: [{
+            type: 'text', text:
+              `✅ **BioRecord submitted**\n\n` +
+              `| Field | Value |\n` +
+              `|-------|-------|\n` +
+              `| Record ID | \`${data?.record_id}\` |\n` +
+              `| Arweave TX | \`${data?.arweave_txid}\` |\n` +
+              `| Success | ${data?.success} |`
+          }],
+        }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
       }
     }
 
