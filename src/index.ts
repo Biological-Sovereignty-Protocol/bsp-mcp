@@ -542,6 +542,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
 
+    case 'bsp_verify_consent': {
+      const { token_id, intent } = (args as { token_id: string; intent: string })
+
+      if (!token_id || !intent) {
+        return { content: [{ type: 'text', text: '❌ Missing required parameters: token_id, intent' }], isError: true }
+      }
+
+      const apiUrl = process.env.BSP_API_URL || 'https://api.biologicalsovereigntyprotocol.com'
+
+      try {
+        const res = await fetch(`${apiUrl}/api/consent/${token_id}/verify?intent=${encodeURIComponent(intent)}`)
+        const data = await res.json() as { valid: boolean; reason?: string }
+        if (!res.ok) {
+          return { content: [{ type: 'text', text: `❌ Consent verification failed: ${(data as any)?.error || res.statusText}` }], isError: true }
+        }
+        const status = data.valid ? '✅ Valid' : '❌ Invalid'
+        const reason = data.reason ? `\nReason: ${data.reason}` : ''
+        return {
+          content: [{
+            type: 'text',
+            text: `${status}\n\nToken: \`${token_id}\`\nIntent: \`${intent}\`${reason}`,
+          }],
+        }
+      } catch (e: any) {
+        return { content: [{ type: 'text', text: `❌ Network error: ${e.message}` }], isError: true }
+      }
+    }
+
     case 'bsp_submit_biorecord': {
       const consentError = guard.check('SUBMIT_RECORD')
       if (consentError) return consentError
