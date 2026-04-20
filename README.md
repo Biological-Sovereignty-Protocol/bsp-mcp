@@ -35,6 +35,7 @@ This is what sovereign health data looks like in practice.
 | `bsp_resolve_biomarker` | No — public taxonomy | Name, category, level, and clinical context for a BSP biomarker code. |
 | `bsp_list_categories` | No — public taxonomy | All 25 BSP taxonomy categories with level filters (CORE / STANDARD / EXTENDED / DEVICE). |
 | `bsp_check_consent` | No — reads session config | Active consent status: which BEO is connected, which intents are authorized, token ID, and expiry. Run this first. |
+| `bsp_verify_consent` | No — public verification | Verify if a specific ConsentToken is valid and covers a given intent. Returns `{ valid, reason }`. |
 | `bsp_lock_beo` | Yes — `BSP_PRIVATE_KEY` | Emergency lock — freezes the BEO immediately. No operations permitted while locked. |
 | `bsp_unlock_beo` | Yes — `BSP_PRIVATE_KEY` | Unlock a previously locked BEO. |
 | `bsp_destroy_beo` | Yes — `BSP_PRIVATE_KEY` + `confirm: true` | **IRREVERSIBLE** — Permanent erasure (LGPD/GDPR). Nullifies key, revokes all tokens, releases domain. |
@@ -212,7 +213,10 @@ type MCPResult = {
 |---|---|---|
 | `BSP_BEO_DOMAIN` | Yes | The user's BSP identity domain (e.g. `alice.bsp`) |
 | `BSP_CONSENT_TOKEN_ID` | Yes for data access | Token ID issued by the BEO holder |
-| `BSP_RELAYER_URL` | No | Override registry endpoint (default: official relayer) |
+| `BSP_API_URL` | No | Override BSP API base URL (default: `https://api.biologicalsovereigntyprotocol.com`) |
+| `BSP_IEO_API_KEY` | Yes for IEO tools | API key for IEO-scoped operations (`bsp_list_beos`, `bsp_list_ieos`, `bsp_submit_biorecord`) |
+| `BSP_PRIVATE_KEY` | Yes for write tools | Hex-encoded Ed25519 private key — required for `bsp_lock_beo`, `bsp_unlock_beo`, `bsp_destroy_beo`, `bsp_revoke_all_tokens` |
+| `BSP_REGISTRY_URL` | No | Override relayer/registry endpoint (default: `https://api.biologicalsovereigntyprotocol.com`) |
 | `BSP_NETWORK` | No | `mainnet` or `testnet` (default: `mainnet`) |
 
 **Related packages**
