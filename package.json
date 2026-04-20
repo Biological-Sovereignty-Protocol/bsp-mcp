@@ -42,7 +42,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@biological-sovereignty-protocol/sdk": "^1.0.0",
+    "@biological-sovereignty-protocol/sdk": "^2.1.0",
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {
